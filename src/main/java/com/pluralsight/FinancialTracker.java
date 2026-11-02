@@ -192,6 +192,9 @@ public class FinancialTracker {
                 case 4:
                     previousYear(myLedger);
                     break;
+                case 5:
+                    searchByVendor(myLedger, scan);
+                    break;
             }
 
         }
@@ -270,6 +273,19 @@ public class FinancialTracker {
 
             if((year - 1) == transactionYear){
                 System.out.println(transaction);
+            }
+        }
+    }
+
+    public static void searchByVendor(ArrayList<Transaction> myLedger, Scanner scan) {
+        System.out.println("\nSearch By Vendor:\n");
+        System.out.print("Please enter the vendor you'd like to filter by: ");
+
+        String vendorInput = scan.nextLine();
+
+        for (int i = myLedger.size() - 1; i >= 0 ; i--) {
+            if(vendorInput.equalsIgnoreCase(myLedger.get(i).getVendor())){
+                System.out.println("\n" + myLedger.get(i));
             }
         }
     }
