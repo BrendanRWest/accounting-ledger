@@ -33,7 +33,7 @@ public class FinancialTracker {
                         addDeposit(scan, writer, myLedger);
                         break;
                     case "P":
-                        //makePayment(scan, writer, myLedger);
+                        makePayment(scan, writer, myLedger);
                         break;
                     case "L":
                         //displayLedger();
@@ -74,6 +74,31 @@ public class FinancialTracker {
 
         Transaction deposit = new Transaction(timestamp, description, vendor, amount);
         myLedger.add(deposit);
+
+        String csvLine = timestamp + "|" + description + "|" + vendor + "|$" + String.format("%.2f", amount);
+        try {
+            writer.write(csvLine);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void makePayment(Scanner scan, BufferedWriter writer, ArrayList<Transaction> myLedger){
+        String timestamp = getTimestamp();
+
+        System.out.print("\nPlease enter a description for your payment: ");
+        String description = scan.nextLine();
+
+        System.out.print("\nPlease enter the vendor: ");
+        String vendor = scan.nextLine();
+
+        System.out.print("\nPlease enter the payment amount: ");
+        double amount = (scan.nextDouble()) * -1;
+        scan.nextLine();
+
+        Transaction payment = new Transaction(timestamp, description, vendor, amount);
+        myLedger.add(payment);
 
         String csvLine = timestamp + "|" + description + "|" + vendor + "|$" + String.format("%.2f", amount);
         try {
