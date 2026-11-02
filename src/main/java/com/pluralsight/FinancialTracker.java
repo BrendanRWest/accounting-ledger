@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class FinancialTracker {
@@ -25,7 +26,7 @@ public class FinancialTracker {
                 System.out.println("P) Make Payment (Debit)");
                 System.out.println("L) Ledger");
                 System.out.println("X) Exit\n");
-                System.out.print("Please type the letter of your selection: ");
+                System.out.print("Please enter the letter of your selection: ");
 
                 String homeChoice = scan.nextLine();
                 switch (homeChoice.toUpperCase()) {
@@ -36,7 +37,7 @@ public class FinancialTracker {
                         makePayment(scan, writer, myLedger);
                         break;
                     case "L":
-                        //displayLedger();
+                        displayLedger(scan, myLedger);
                         break;
                     case "X":
                         System.out.println("\nThank you, have a nice day!");
@@ -44,6 +45,7 @@ public class FinancialTracker {
                         break;
                     default:
                         System.out.println("Invalid choice, please try again.\n");
+                        break;
                 }
             }
         } catch (IOException e) {
@@ -108,5 +110,57 @@ public class FinancialTracker {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static void displayLedger(Scanner scan, ArrayList<Transaction> myLedger){
+        System.out.println("\nLedger Menu: \n");
+        boolean ledgerCondition = true;
+
+        while(ledgerCondition){
+            System.out.println("A) All");
+            System.out.println("D) Deposits");
+            System.out.println("P) Payments");
+            System.out.println("R) Reports");
+            System.out.println("H) Home");
+            System.out.print("\nPlease enter the letter of your selection: ");
+
+            String ledgerChoice = scan.nextLine();
+
+            switch (ledgerChoice.toUpperCase()) {
+                case "A":
+                    System.out.println("\nAll entries:\n");
+                    for (int i = myLedger.size() - 1; i >= 0; i--) {
+                        System.out.println(myLedger.get(i));
+                    }
+                    break;
+                case "D":
+                    System.out.println("\nAll Deposits:\n");
+                    for (int i = myLedger.size() - 1; i >= 0; i--) {
+                        if(myLedger.get(i).getAmount()>0){
+                            System.out.println(myLedger.get(i));
+                        }
+                    }
+                    break;
+                case "P":
+                    System.out.println("\nAll Payments:\n");
+                    for (int i = myLedger.size() - 1; i >= 0; i--) {
+                        if(myLedger.get(i).getAmount()<0){
+                            System.out.println(myLedger.get(i));
+                        }
+                    }
+                    break;
+                case "R":
+                    displayReports(myLedger, scan);
+                    break;
+                case "H":
+                    ledgerCondition = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice, please try again.");
+                    break;
+            }
+        }
+    }
+    public static void displayReports(ArrayList<Transaction> myLedger, Scanner scan){
+
     }
 }

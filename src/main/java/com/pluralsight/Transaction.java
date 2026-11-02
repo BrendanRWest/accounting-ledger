@@ -47,11 +47,6 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "timestamp='" + timestamp + '\'' +
-                ", description='" + description + '\'' +
-                ", vendor='" + vendor + '\'' +
-                ", amount=" + amount +
-                '}';
+        return timestamp + "|" + description + "|" + vendor + "|" + amount;
     }
 }
