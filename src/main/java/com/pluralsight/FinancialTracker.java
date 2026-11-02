@@ -186,6 +186,9 @@ public class FinancialTracker {
                 case 2:
                     previousMonth(myLedger);
                     break;
+                case 3:
+                    yearToDate(myLedger);
+                    break;
             }
 
         }
@@ -211,5 +214,26 @@ public class FinancialTracker {
 
         }
     }
+
+    public static void previousMonth(ArrayList<Transaction> myLedger){
+        LocalDate today = LocalDate.now();
+        int month = today.getMonthValue();
+        int year = today.getYear();
+
+        System.out.println("\nPrevious Month Report:\n");
+        for (int i = myLedger.size() - 1; i >= 0; i--) {
+            Transaction transaction = myLedger.get(i);
+            String dateString = transaction.getTimestamp().substring(0,10);
+
+            LocalDate transactionDate = LocalDate.parse(dateString);
+            int transactionMonth = transactionDate.getMonthValue();
+            int transactionYear = transactionDate.getYear();
+
+            if(((month - 1) == transactionMonth) && (year == transactionYear)){
+                System.out.println(transaction);
+            }
+        }
+    }
+
 
 }
