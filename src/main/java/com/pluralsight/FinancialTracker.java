@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class FinancialTracker {
     public static void main(String[] args) {
-        System.out.println("Welcome to your personal Accounting Ledger!\n");
+        System.out.println("Welcome to your Personal Accounting Ledger!\n");
         Scanner scan = new Scanner(System.in);
         ArrayList<Transaction> myLedger = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public class FinancialTracker {
             boolean mainCondition = true;
 
             while(mainCondition){
-                System.out.println("Home Menu: \n");
+                System.out.println("\nHome Menu: \n");
                 System.out.println("D) Add Deposit");
                 System.out.println("P) Make Payment (Debit)");
                 System.out.println("L) Ledger");
@@ -30,13 +30,13 @@ public class FinancialTracker {
                 String homeChoice = scan.nextLine();
                 switch (homeChoice.toUpperCase()) {
                     case "D":
-                        addDeposit(scan, writer);
+                        addDeposit(scan, writer, myLedger);
                         break;
                     case "P":
-                        makePayment(scan, writer);
+                        //makePayment(scan, writer, myLedger);
                         break;
                     case "L":
-                        displayLedger();
+                        //displayLedger();
                         break;
                     case "X":
                         System.out.println("\nThank you, have a nice day!");
@@ -53,13 +53,35 @@ public class FinancialTracker {
     }
 
     public static String getTimestamp(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd | HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd|HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         String timestamp = now.format(formatter);
         return timestamp;
     }
 
-    public static void addDeposit(Scanner scan, BufferedWriter writer) {
+    public static void addDeposit(Scanner scan, BufferedWriter writer, ArrayList<Transaction> myLedger) {
+        String timestamp = getTimestamp();
 
+        System.out.print("\nPlease enter a description for your deposit: ");
+        String description = scan.nextLine();
+
+        System.out.print("\nPlease enter the vendor: ");
+        String vendor = scan.nextLine();
+
+        System.out.print("\nPlease enter the deposit amount: ");
+        double amount = scan.nextDouble();
+        scan.nextLine();
+
+        Transaction deposit = new Transaction(timestamp, description, vendor, amount);
+        myLedger.add(deposit);
+
+        String csvLine = timestamp + "|" + description + "|" + vendor + "|$" + String.format("%.2f", amount);
+        try {
+            writer.write(csvLine);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
