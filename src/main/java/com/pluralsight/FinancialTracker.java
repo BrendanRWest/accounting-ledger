@@ -4,9 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class FinancialTracker {
@@ -86,6 +86,7 @@ public class FinancialTracker {
             throw new RuntimeException(e);
         }
     }
+
     public static void makePayment(Scanner scan, BufferedWriter writer, ArrayList<Transaction> myLedger){
         String timestamp = getTimestamp();
 
@@ -111,6 +112,7 @@ public class FinancialTracker {
             throw new RuntimeException(e);
         }
     }
+
     public static void displayLedger(Scanner scan, ArrayList<Transaction> myLedger){
         System.out.println("\nLedger Menu: \n");
         boolean ledgerCondition = true;
@@ -160,7 +162,54 @@ public class FinancialTracker {
             }
         }
     }
-    public static void displayReports(ArrayList<Transaction> myLedger, Scanner scan){
 
+    public static void displayReports(ArrayList<Transaction> myLedger, Scanner scan){
+        System.out.println("\nReports Menu:\n");
+        boolean reportsCondition = true;
+        int reportsChoice;
+
+        while(reportsCondition){
+            System.out.println("1) Month to Date");
+            System.out.println("2) Previous Month");
+            System.out.println("3) Year to Date");
+            System.out.println("4) Previous Year");
+            System.out.println("5) Search by Vendor");
+            System.out.println("0) Back");
+            System.out.print("Please enter the number of your selection: ");
+            reportsChoice = scan.nextInt();
+            scan.nextLine();
+
+            switch (reportsChoice) {
+                case 1:
+                    monthToDate(myLedger);
+                    break;
+                case 2:
+                    previousMonth(myLedger);
+                    break;
+            }
+
+        }
     }
+
+    public static void monthToDate(ArrayList<Transaction> myLedger){
+        LocalDate today = LocalDate.now();
+        int month = today.getMonthValue();
+        int year = today.getYear();
+
+        System.out.println("\nMonth to Date Report:\n");
+        for (int i = myLedger.size() - 1; i >= 0; i--) {
+            Transaction transaction = myLedger.get(i);
+            String dateString = transaction.getTimestamp().substring(0,10);
+
+            LocalDate transactionDate = LocalDate.parse(dateString);
+            int transactionMonth = transactionDate.getMonthValue();
+            int transactionYear = transactionDate.getYear();
+
+            if((month == transactionMonth) && (year == transactionYear)){
+                System.out.println(transaction);
+            }
+
+        }
+    }
+
 }
