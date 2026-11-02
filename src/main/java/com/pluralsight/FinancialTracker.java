@@ -235,5 +235,22 @@ public class FinancialTracker {
         }
     }
 
+    public static void yearToDate(ArrayList<Transaction> myLedger){
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+
+        System.out.println("\nYear To Date Report:\n");
+        for (int i = myLedger.size() - 1; i >= 0; i--) {
+            Transaction transaction = myLedger.get(i);
+            String dateString = transaction.getTimestamp().substring(0,10);
+
+            LocalDate transactionDate = LocalDate.parse(dateString);
+            int transactionYear = transactionDate.getYear();
+
+            if(year == transactionYear){
+                System.out.println(transaction);
+            }
+        }
+    }
 
 }
