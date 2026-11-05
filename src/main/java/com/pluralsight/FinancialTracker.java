@@ -184,7 +184,7 @@ public class FinancialTracker {
 
             try {
                 amount = Double.parseDouble(scan.nextLine());
-
+                // If the amount is positive and a real number, it is a deposit and is stored
                 if (Double.isFinite(amount) && amount > 0) {
                     break;
                 }
@@ -195,10 +195,12 @@ public class FinancialTracker {
                 System.out.println("Invalid amount. Please enter a number.");
             }
         }
-
+        // Create a store the transaction object in the list
         Transaction deposit = new Transaction(date, time, description, vendor, amount);
 
         String csvLine = deposit.toString();
+
+        // Write the new deposit to the csv file
         try {
             writer.write(csvLine);
             writer.newLine();
@@ -209,6 +211,7 @@ public class FinancialTracker {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        // Resort the array list
         sortTransactions();
     }
 
@@ -231,7 +234,7 @@ public class FinancialTracker {
 
             try {
                 amount = Double.parseDouble(scan.nextLine());
-
+                // If the amount is a real number, it is stored (we'll handle the negative aspect later)
                 if (Double.isFinite(amount) && amount > 0) {
                     break;
                 }
@@ -242,11 +245,14 @@ public class FinancialTracker {
                 System.out.println("Invalid amount. Please enter a number.");
             }
         }
+        // Make the amount negative as it is a payment
         amount = -amount;
 
+        // Create the payment object
         Transaction payment = new Transaction(date, time, description, vendor, amount);
 
         String csvLine = payment.toString();
+        // Write the payment to the csv file
         try {
             writer.write(csvLine);
             writer.newLine();
@@ -264,6 +270,7 @@ public class FinancialTracker {
         System.out.println("\nLedger Menu: \n");
         boolean ledgerCondition = true;
 
+        // Ledger menu
         while(ledgerCondition){
             System.out.println("\nA) All");
             System.out.println("D) Deposits");
@@ -274,6 +281,7 @@ public class FinancialTracker {
 
             String ledgerChoice = scan.nextLine();
 
+            // Using user input to direct the program
             switch (ledgerChoice.toUpperCase()) {
                 case "A":
                     displayAll();
@@ -297,6 +305,7 @@ public class FinancialTracker {
         }
     }
 
+    // Iterate through the array list and print each transaction
     public static void displayAll() {
         System.out.println("\nAll Transactions:\n");
 
@@ -305,6 +314,7 @@ public class FinancialTracker {
         }
     }
 
+    // Iterate through the array list and print each transaction that is positive (deposits)
     public static void displayDeposits() {
         System.out.println("\nAll Deposits:\n");
 
@@ -315,6 +325,7 @@ public class FinancialTracker {
         }
     }
 
+    // Iterate through the array list and print each transaction that is negative (payments)
     public static void displayPayments() {
         System.out.println("\nAll Payments:\n");
 
@@ -325,11 +336,16 @@ public class FinancialTracker {
         }
     }
 
+    // Reports menu
     public static void displayReports(Scanner scan){
         System.out.println("\nReports Menu:\n");
         boolean reportsCondition = true;
+
+        // Using a string here to make user input validation simpler in the switch case
+        // (Anything other than 0-6 --including strings of letters-- goes to the default case)
         String reportsChoice;
 
+        // Use user input to direct the program for report type choice
         while(reportsCondition){
             System.out.println("\n1) Month to Date");
             System.out.println("2) Previous Month");
@@ -383,6 +399,9 @@ public class FinancialTracker {
             int transactionMonth = transactionDate.getMonthValue();
             int transactionYear = transactionDate.getYear();
 
+            // Comparing current month and year to transaction month and year
+            // Ensuring that it isn't just the same month, but the same month of the CURRENT YEAR
+            // Also checking to make sure the transaction date isn't after the current date
             if (month == transactionMonth
                     && year == transactionYear
                     && !transactionDate.isAfter(today)) {
@@ -395,7 +414,7 @@ public class FinancialTracker {
     public static void previousMonth() {
         LocalDate lastMonth = LocalDate.now().minusMonths(1);
 
-        int month = lastMonth.getMonthValue();
+        int previousMonth = lastMonth.getMonthValue();
         int year = lastMonth.getYear();
 
         System.out.println("\nPrevious Month Report:\n");
@@ -406,7 +425,9 @@ public class FinancialTracker {
             int transactionMonth = transactionDate.getMonthValue();
             int transactionYear = transactionDate.getYear();
 
-            if (month == transactionMonth && year == transactionYear) {
+            // Comparing the previous month and current year to the transaction month and year
+            // Print out transaction if it's in the previous month and current year
+            if (previousMonth == transactionMonth && year == transactionYear) {
                 System.out.println(transaction);
             }
         }
@@ -422,6 +443,8 @@ public class FinancialTracker {
 
             int transactionYear = transactionDate.getYear();
 
+            // Comparing the current year and transaction year
+            // print out transaction if it's from this year and isn't after the current date
             if (year == transactionYear && !transactionDate.isAfter(today)) {
                 System.out.println(transaction);
             }
@@ -437,6 +460,8 @@ public class FinancialTracker {
         for (Transaction transaction : transactions) {
             LocalDate transactionDate = transaction.getDate();
 
+            // Compare the previous year to the transaction year
+            // Print out the transaction if it's from the previous year
             if (transactionDate.getYear() == previousYear) {
                 System.out.println(transaction);
             }
@@ -449,6 +474,7 @@ public class FinancialTracker {
 
         String vendorInput = scan.nextLine();
 
+        // Comparing the user vendor input to the transaction vendor and print if they match
         for (Transaction transaction : transactions) {
             if (vendorInput.equalsIgnoreCase(transaction.getVendor())) {
                 System.out.println(transaction);
@@ -457,6 +483,8 @@ public class FinancialTracker {
     }
 
     public static void customSearch(Scanner scan) {
+
+        // Ask for, accept, and store user input for each element
         System.out.println("\nCustom Transaction Search\n");
         System.out.println("Leave any field blank to ignore that filter.");
 
@@ -475,11 +503,13 @@ public class FinancialTracker {
         System.out.print("Exact amount: ");
         String amountInput = scan.nextLine().trim();
 
+        // Set non string inputs to null initially since .isEmpty() won't work on them
         LocalDate startDate = null;
         LocalDate endDate = null;
         Double amount = null;
 
         try {
+            // If start input or end input aren't left blank + aren't invalid , parse and store them
             if (!startInput.isEmpty()) {
                 startDate = LocalDate.parse(startInput, DATE_FMT);
             }
@@ -488,6 +518,7 @@ public class FinancialTracker {
                 endDate = LocalDate.parse(endInput, DATE_FMT);
             }
 
+            // If amount input isn't left blank and isn't invalid, parse and store it
             if (!amountInput.isEmpty()) {
                 amount = Double.parseDouble(amountInput);
 
@@ -501,7 +532,7 @@ public class FinancialTracker {
             System.out.println("Invalid date or amount. Please try again.");
             return;
         }
-
+        // Check to ensure that the start date is before the end date
         if (startDate != null && endDate != null
                 && startDate.isAfter(endDate)) {
             System.out.println("Start date cannot be after end date.");
@@ -514,33 +545,69 @@ public class FinancialTracker {
 
         for (Transaction transaction : transactions) {
 
+            // Here we begin the If Statement Gauntlet muahahaha
+            // This truly is not as complex as it may look
+
+            // Each statement will include != null or !.isEmpty() before checking the other condition
+
+            /* If at any point the user's input for a certain parameter was left blank,
+            the if statement condition is false off the bat, it doesn't run, and we move
+            to the next if statement.
+             */
+
+            /* If the transaction date is before the start date, it's outside of the user's
+            search parameters and we 'continue' to the next transaction object. Otherwise,
+            we move to the next if statement
+             */
             if (startDate != null
                     && transaction.getDate().isBefore(startDate)) {
                 continue;
             }
 
+            /* If the transaction date is after the end date, it's outside of the user's search parameters
+            and we 'continue' to the next transaction object. Otherwise, we move to the next
+            if statement
+             */
             if (endDate != null
                     && transaction.getDate().isAfter(endDate)) {
                 continue;
             }
 
+            /* If the description input is not contained within the transaction's description
+            we 'continue' to the next transaction object. Otherwise, we keep on moving along
+            to the next if statement
+             */
             if (!descriptionInput.isEmpty()
                     && !transaction.getDescription().toLowerCase()
                     .contains(descriptionInput.toLowerCase())) {
                 continue;
             }
 
+            /* If the vendor input is not contained within the transaction's vendor
+            we 'continue' to the next transaction object. Otherwise, we keep on moving along
+            to the next if statement
+             */
             if (!vendorInput.isEmpty()
                     && !transaction.getVendor().toLowerCase()
                     .contains(vendorInput.toLowerCase())) {
                 continue;
             }
 
+            /* If the amount input doesn't equal the transaction's amount,
+            we 'continue' to the next transaction object. Otherwise, we keep moving along
+            to the next if statement
+             */
             if (amount != null
+                    // .compare returns 0 if they are equal
                     && Double.compare(transaction.getAmount(), amount) != 0) {
                 continue;
             }
 
+            /* Phew, we made it through the if statement gauntlet without a single one running!
+            That means that the current transaction object fit into all of the user's
+            search parameters. Let's print it!!! Afterwards, we move to our next transaction until
+            we've made it through the whole list
+             */
             System.out.println(transaction);
             found = true;
         }
