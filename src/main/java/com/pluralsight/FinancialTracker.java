@@ -195,7 +195,7 @@ public class FinancialTracker {
                 System.out.println("Invalid amount. Please enter a number.");
             }
         }
-        // Create a store the transaction object in the list
+        // Create the deposit object
         Transaction deposit = new Transaction(date, time, description, vendor, amount);
 
         String csvLine = deposit.toString();
@@ -205,7 +205,7 @@ public class FinancialTracker {
             writer.write(csvLine);
             writer.newLine();
             writer.flush();
-
+            // store the deposit in the list
             transactions.add(deposit);
             System.out.println("Deposit successful");
         } catch (IOException e) {
@@ -595,7 +595,6 @@ public class FinancialTracker {
 
             /* If the amount input doesn't equal the transaction's amount,
             we 'continue' to the next transaction object. Otherwise, we keep moving along
-            to the next if statement
              */
             if (amount != null
                     // .compare returns 0 if they are equal
