@@ -16,6 +16,8 @@ import java.util.Scanner;
 
 public class FinancialTracker {
 
+    // Private variables Raymond provided
+
     private static final ArrayList<Transaction> transactions = new ArrayList<>();
     private static final String FILE_NAME = "transactions.csv";
 
@@ -31,6 +33,8 @@ public class FinancialTracker {
         System.out.println("\nWelcome to your Personal Accounting Ledger!");
         Scanner scan = new Scanner(System.in);
 
+
+        // Load + sort the csv file
         loadTransactions(FILE_NAME);
         sortTransactions();
 
@@ -38,6 +42,8 @@ public class FinancialTracker {
 
             boolean mainCondition = true;
 
+
+            // Home menu
             while(mainCondition){
                 System.out.println("\nHome Menu: \n");
                 System.out.println("D) Add Deposit");
@@ -62,7 +68,7 @@ public class FinancialTracker {
                         mainCondition = false;
                         break;
                     default:
-                        System.out.println("Invalid choice, please try again.\n");
+                        System.out.println("Invalid choice, please try again.\n");  // User input validation
                         break;
                 }
             }
@@ -72,6 +78,8 @@ public class FinancialTracker {
 
     }
 
+
+    // Method to read the csv file and load it into the arraylist
     public static void loadTransactions(String fileName) {
 
         try (BufferedReader reader =
@@ -83,11 +91,13 @@ public class FinancialTracker {
 
                 String[] tokens = csvLine.split("\\|", -1);
 
+                // If the line doesn't match the format, skip to the next one
                 if (tokens.length != 5) {
                     System.out.println("Skipping invalid transaction: " + csvLine);
                     continue;
                 }
 
+                // Creating an object for each line
                 try {
                     LocalDate date = LocalDate.parse(tokens[0], DATE_FMT);
                     LocalTime time = LocalTime.parse(tokens[1], TIME_FMT);
@@ -99,6 +109,7 @@ public class FinancialTracker {
                             date, time, description, vendor, amount
                     );
 
+                    // Storing the object in the ArrayList
                     transactions.add(transaction);
 
                 } catch (RuntimeException e) {
@@ -106,6 +117,7 @@ public class FinancialTracker {
                 }
             }
 
+            // If no file is found, have the writer create one
         } catch (FileNotFoundException e) {
             try (BufferedWriter writer =
                          new BufferedWriter(new FileWriter(fileName))) {
@@ -122,6 +134,9 @@ public class FinancialTracker {
     }
 
     public static void sortTransactions() {
+
+        // Not sure if Raymond taught this or not, but when I looked it up,
+        // this seemed like the best practice for sorting.
         transactions.sort(
                 Comparator.comparing(Transaction::getDate)
                         .thenComparing(Transaction::getTime)
@@ -129,8 +144,11 @@ public class FinancialTracker {
         );
     }
 
+    // Created my own method for taking user input for Date + Time and storing it
     public static LocalDateTime readDateTime(Scanner scan) {
 
+        // Runs until the LocalDateTime returned is in the valid format
+        // The return breaks out of the while loop so no condition variable needed
         while (true) {
             System.out.print("Enter date and time (yyyy-MM-dd HH:mm:ss): ");
 
@@ -148,7 +166,9 @@ public class FinancialTracker {
     public static void addDeposit(Scanner scan, BufferedWriter writer) {
         LocalDateTime dateTime = readDateTime(scan);
 
+        // Extracting LocalDate object out of the LocalDateTime object
         LocalDate date = dateTime.toLocalDate();
+        // Extracting LocalTime object out of the LocalDateTime object
         LocalTime time = dateTime.toLocalTime();
 
         System.out.print("\nPlease enter a description for your deposit: ");
