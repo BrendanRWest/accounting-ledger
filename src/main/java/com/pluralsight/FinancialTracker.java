@@ -16,6 +16,13 @@ import java.util.Scanner;
 
 public class FinancialTracker {
 
+    // Personalization variables
+    private static final String RESET = "\u001B[0m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String RED = "\u001B[31m";
+
     // Private variables Raymond provided
 
     private static final ArrayList<Transaction> transactions = new ArrayList<>();
@@ -30,7 +37,7 @@ public class FinancialTracker {
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
 
     public static void main(String[] args) {
-        System.out.println("\nWelcome to your Personal Accounting Ledger!");
+        displayWelcomeScreen();
         Scanner scan = new Scanner(System.in);
 
 
@@ -45,12 +52,12 @@ public class FinancialTracker {
 
             // Home menu
             while(mainCondition){
-                System.out.println("\nHome Menu: \n");
-                System.out.println("D) Add Deposit");
-                System.out.println("P) Make Payment (Debit)");
-                System.out.println("L) Ledger");
-                System.out.println("X) Exit\n");
-                System.out.print("Please enter the letter of your selection: ");
+                System.out.println(YELLOW + "\n===== MAYA'S MAIN MENU =====" + RESET);
+                System.out.println("D) Record Lemonade Sale (Deposit)");
+                System.out.println("P) Record Business Expense (Payment)");
+                System.out.println("L) View Business Ledger");
+                System.out.println("X) Close the Stand\n");
+                System.out.print(GREEN + "Your selection: " + RESET);
 
                 String homeChoice = scan.nextLine();
                 switch (homeChoice.toUpperCase()) {
@@ -64,7 +71,10 @@ public class FinancialTracker {
                         displayLedger(scan);
                         break;
                     case "X":
-                        System.out.println("\nThank you, have a nice day!");
+                        System.out.println(YELLOW
+                                + "\nMaya's Lemonade Stand is now CLOSED."
+                                + "\nThanks for helping Maya build her empire!"
+                                + RESET);
                         mainCondition = false;
                         break;
                     default:
@@ -78,6 +88,37 @@ public class FinancialTracker {
 
     }
 
+    public static void displayWelcomeScreen() {
+
+        System.out.println(YELLOW);
+        System.out.println("       /\\_/\\\\");
+        System.out.println("      ( o.o )");
+        System.out.println("       > ^ <");
+
+        System.out.println("=====================================");
+        System.out.println("       MAYA'S LEMONADE STAND");
+        System.out.println("=====================================");
+
+        System.out.println(GREEN + "Fresh Squeezed Since 2026");
+        System.out.println("CEO & Founder: Maya the Cat");
+
+        System.out.println(CYAN + "\nSqueezing lemons...");
+
+        System.out.print("[");
+
+        for (int i = 0; i < 20; i++) {
+            System.out.print("#");
+
+            try {
+                Thread.sleep(75);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        System.out.println("] 100%");
+    }
 
     // Method to read the csv file and load it into the arraylist
     public static void loadTransactions(String fileName) {
@@ -207,7 +248,9 @@ public class FinancialTracker {
             writer.flush();
             // store the deposit in the list
             transactions.add(deposit);
-            System.out.println("Deposit successful");
+            System.out.println(GREEN
+                    + "\nCha-ching! Maya made another sale!"
+                    + RESET);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -259,7 +302,9 @@ public class FinancialTracker {
             writer.flush();
 
             transactions.add(payment);
-            System.out.println("Payment successful");
+            System.out.println(YELLOW
+                    + "\nBusiness expense recorded. Maya approves... reluctantly."
+                    + RESET);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -272,12 +317,13 @@ public class FinancialTracker {
 
         // Ledger menu
         while(ledgerCondition){
-            System.out.println("\nA) All");
-            System.out.println("D) Deposits");
-            System.out.println("P) Payments");
-            System.out.println("R) Reports");
-            System.out.println("H) Home");
-            System.out.print("\nPlease enter the letter of your selection: ");
+            System.out.println(YELLOW + "\n===== MAYA'S BUSINESS LEDGER =====" + RESET);
+            System.out.println("A) All Transactions");
+            System.out.println("D) Lemonade Sales / Deposits");
+            System.out.println("P) Business Expenses / Payments");
+            System.out.println("R) Financial Reports");
+            System.out.println("H) Return to Main Menu");
+            System.out.print(GREEN + "\nYour selection: " + RESET);
 
             String ledgerChoice = scan.nextLine();
 
@@ -308,32 +354,48 @@ public class FinancialTracker {
     // Iterate through the array list and print each transaction
     public static void displayAll() {
         System.out.println("\nAll Transactions:\n");
-
+        double net = 0;
         for (Transaction transaction : transactions) {
-            System.out.println(transaction);
+            net += transaction.getAmount();
+            if (transaction.getAmount() > 0) {
+                System.out.println(GREEN + transaction + RESET);
+            } else {
+                System.out.println(RED + transaction + RESET);
+            }
+        }
+        if(net > 0) {
+            System.out.printf(GREEN + "\nMaya's Lemonade Stand Net: $%.2f%n" + RESET, net);
+        } else {
+            System.out.printf(RED + "\nMaya's Lemonade Stand Net: $%.2f%n" + RESET, net);
         }
     }
 
     // Iterate through the array list and print each transaction that is positive (deposits)
     public static void displayDeposits() {
         System.out.println("\nAll Deposits:\n");
-
+        double totalDeposits = 0;
         for (Transaction transaction : transactions) {
+
             if (transaction.getAmount() > 0) {
-                System.out.println(transaction);
+                totalDeposits += transaction.getAmount();
+                System.out.println(GREEN + transaction + RESET);
             }
         }
+        System.out.printf(GREEN + "\nTotal Deposits: $%.2f%n" + RESET, totalDeposits);
     }
 
     // Iterate through the array list and print each transaction that is negative (payments)
     public static void displayPayments() {
         System.out.println("\nAll Payments:\n");
-
+        double totalPayments = 0;
         for (Transaction transaction : transactions) {
+
             if (transaction.getAmount() < 0) {
-                System.out.println(transaction);
+                totalPayments += transaction.getAmount();
+                System.out.println(RED + transaction + RESET);
             }
         }
+        System.out.printf(RED + "\nTotal Payments: $%.2f%n" + RESET, totalPayments);
     }
 
     // Reports menu
@@ -391,6 +453,7 @@ public class FinancialTracker {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();
+        double netBalance = 0;
 
         System.out.println("\nMonth to Date Report:\n");
         for (Transaction transaction : transactions) {
@@ -398,16 +461,24 @@ public class FinancialTracker {
 
             int transactionMonth = transactionDate.getMonthValue();
             int transactionYear = transactionDate.getYear();
-
             // Comparing current month and year to transaction month and year
             // Ensuring that it isn't just the same month, but the same month of the CURRENT YEAR
             // Also checking to make sure the transaction date isn't after the current date
             if (month == transactionMonth
                     && year == transactionYear
                     && !transactionDate.isAfter(today)) {
-                System.out.println(transaction);
+                netBalance += transaction.getAmount();
+                if (transaction.getAmount() > 0) {
+                    System.out.println(GREEN + transaction + RESET);
+                } else {
+                    System.out.println(RED + transaction + RESET);
+                }
             }
-
+        }
+        if(netBalance > 0) {
+            System.out.println(GREEN + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
+        } else {
+            System.out.println(RED + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
         }
     }
 
@@ -416,6 +487,7 @@ public class FinancialTracker {
 
         int previousMonth = lastMonth.getMonthValue();
         int year = lastMonth.getYear();
+        double netBalance = 0;
 
         System.out.println("\nPrevious Month Report:\n");
 
@@ -428,14 +500,25 @@ public class FinancialTracker {
             // Comparing the previous month and current year to the transaction month and year
             // Print out transaction if it's in the previous month and current year
             if (previousMonth == transactionMonth && year == transactionYear) {
-                System.out.println(transaction);
+                netBalance += transaction.getAmount();
+                if (transaction.getAmount() > 0) {
+                    System.out.println(GREEN + transaction + RESET);
+                } else {
+                    System.out.println(RED + transaction + RESET);
+                }
             }
+        }
+        if(netBalance > 0) {
+            System.out.println(GREEN + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
+        } else {
+            System.out.println(RED + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
         }
     }
 
     public static void yearToDate(){
         LocalDate today = LocalDate.now();
         int year = today.getYear();
+        double netBalance = 0;
 
         System.out.println("\nYear To Date Report:\n");
         for (Transaction transaction : transactions) {
@@ -446,14 +529,25 @@ public class FinancialTracker {
             // Comparing the current year and transaction year
             // print out transaction if it's from this year and isn't after the current date
             if (year == transactionYear && !transactionDate.isAfter(today)) {
-                System.out.println(transaction);
+                netBalance += transaction.getAmount();
+                if (transaction.getAmount() > 0) {
+                    System.out.println(GREEN + transaction + RESET);
+                } else {
+                    System.out.println(RED + transaction + RESET);
+                }
             }
+        }
+        if(netBalance > 0) {
+            System.out.println(GREEN + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
+        } else {
+            System.out.println(RED + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
         }
     }
 
     public static void previousYear() {
         LocalDate today = LocalDate.now();
         int previousYear = today.getYear() - 1;
+        double netBalance = 0;
 
         System.out.println("\nPrevious Year Report:\n");
 
@@ -463,8 +557,18 @@ public class FinancialTracker {
             // Compare the previous year to the transaction year
             // Print out the transaction if it's from the previous year
             if (transactionDate.getYear() == previousYear) {
-                System.out.println(transaction);
+                netBalance += transaction.getAmount();
+                if (transaction.getAmount() > 0) {
+                    System.out.println(GREEN + transaction + RESET);
+                } else {
+                    System.out.println(RED + transaction + RESET);
+                }
             }
+        }
+        if(netBalance > 0) {
+            System.out.println(GREEN + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
+        } else {
+            System.out.println(RED + "\nMaya's Lemonade Stand Net: " + netBalance + RESET);
         }
     }
 
@@ -477,7 +581,11 @@ public class FinancialTracker {
         // Comparing the user vendor input to the transaction vendor and print if they match
         for (Transaction transaction : transactions) {
             if (vendorInput.equalsIgnoreCase(transaction.getVendor())) {
-                System.out.println(transaction);
+                if (transaction.getAmount() > 0) {
+                    System.out.println(GREEN + transaction + RESET);
+                } else {
+                    System.out.println(RED + transaction + RESET);
+                }
             }
         }
     }
@@ -607,7 +715,11 @@ public class FinancialTracker {
             search parameters. Let's print it!!! Afterwards, we move to our next transaction until
             we've made it through the whole list
              */
-            System.out.println(transaction);
+            if (transaction.getAmount() > 0) {
+                System.out.println(GREEN + transaction + RESET);
+            } else {
+                System.out.println(RED + transaction + RESET);
+            }
             found = true;
         }
 

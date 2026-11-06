@@ -101,7 +101,6 @@ This includes all, only deposits/payments, custom search, month to date, year to
      screen straight to a .gif. Keep it under 10 seconds and under 10 MB, save it into `images`. -->
 
 ![Main menu](images/menu.png)
-
 ![One feature in action](images/feature.png)
 
 ## A piece of code I am proud of
@@ -112,12 +111,24 @@ This includes all, only deposits/payments, custom search, month to date, year to
 
 ```java
 if (amount != null
-                    // .compare returns 0 if they are equal
-                    && Double.compare(transaction.getAmount(), amount) != 0) {
-                continue;
+        // .compare returns 0 if they are equal
+        && Double.compare(transaction.getAmount(), amount) != 0) {
+        continue;
+        }
+
+            /* Phew, we made it through the if statement gauntlet without a single one running!
+            That means that the current transaction object fit into all of the user's
+            search parameters. Let's print it!!! Afterwards, we move to our next transaction until
+            we've made it through the whole list
+             */
+        if (transaction.getAmount() > 0) {
+        System.out.println(GREEN + transaction + RESET);
+            } else {
+                    System.out.println(RED + transaction + RESET);
             }
+found = true;
 ```
-This is one of many if statements within my customSearch method. The logic for this
+This is one of many if statements within my customSearch method, followed by a print statement. The logic for this
 took me quite a bit to figure out, but it feels strong and concise, so I'm quite proud of it.
 ## Future Work
 
